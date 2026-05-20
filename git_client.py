@@ -8,7 +8,7 @@ class GitClient:
 
     def commit_all(self, message: str):
         print("\n📦 Commit changes")
-        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "add", "-A"], check=True)
         subprocess.run(["git", "commit", "-m", message], check=True)
 
     def push(self, branch: str):

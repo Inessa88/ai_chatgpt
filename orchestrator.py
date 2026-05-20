@@ -14,29 +14,34 @@ agent = Agent()
 def run():
     print("\n===== AI ORCHESTRATOR START =====")
 
-    task = jira.get_next_task()
+    max_tasks = 5  # защита от бесконечного цикла
 
-    if not task:
-        print("No tasks in Jira")
-        return
+    for i in range(max_tasks):
+        print(f"\n\n===== TASK LOOP {i} =====")
 
-    print("\n📌 TASK FOUND:", task["key"])
+        task = jira.get_next_task()
 
-    branch = task["key"]
+        if not task:
+            print("No more tasks in Jira")
+            break
 
-    git.checkout_new_branch(branch)
+        print("\n📌 TASK FOUND:", task["key"])
 
-    result = agent.run(task)
+        branch = task["key"]
 
-    print("\n🧠 RESULT:", result)
+        git.checkout_new_branch(branch)
 
-    git.commit_all(f"{task['key']}: done by agent")
+        result = agent.run(task)
 
-    git.push(branch)
+        print("\n🧠 RESULT:", result)
 
-    jira.mark_done(task["key"])
+        git.commit_all(f"{task['key']}: done by agent")
 
-    print("\n✅ CYCLE COMPLETE")
+        git.push(branch)
+
+        jira.mark_done(task["key"])
+
+    print("\n\n✅ ALL TASKS COMPLETE")
 
 
 if __name__ == "__main__":

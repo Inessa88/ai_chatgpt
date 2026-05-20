@@ -1,2 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# virtualenv
+.venv/
+
+# environment
 .env
-.venv
+
+# Django
+db.sqlite3
+
+# pytest
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# logs
+*.log
