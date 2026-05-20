@@ -35,7 +35,11 @@ def run():
 
         print("\n🧠 RESULT:", result)
 
-        git.commit_all(f"{task['key']}: done by agent")
+        committed = git.commit_all(f"{task['key']}: done by agent")
+
+        if not committed:
+            print("⚠️ Skipping push + jira done (no changes)")
+            continue
 
         git.push(branch)
 
