@@ -15,6 +15,7 @@ class JiraClient:
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
+
     def get_next_task(self):
         jql = f'project = {self.project} AND status = "To Do" ORDER BY created ASC'
 
@@ -52,7 +53,6 @@ class JiraClient:
         }
 
     def mark_done(self, key: str):
-        # получаем transitions
         url = f"{self.base_url}/rest/api/3/issue/{key}/transitions"
 
         r = requests.get(url, headers=self.headers, auth=self.auth)
@@ -61,8 +61,11 @@ class JiraClient:
         transitions = r.json().get("transitions", [])
 
         done_id = None
+
         for t in transitions:
-            if t["name"].lower() == "done":
+            name = t["name"].lower()
+
+            if name in ["done", "готово", "closed", "resolved", "complete"]:
                 done_id = t["id"]
                 break
 
@@ -70,9 +73,12 @@ class JiraClient:
             print("⚠️ No DONE transition found")
             return
 
-        requests.post(
+        r = requests.post(
             url,
             headers=self.headers,
             auth=self.auth,
             json={"transition": {"id": done_id}},
         )
+
+        r.raise_for_status()
+        print(f"✅ Issue {key} moved to DONE")
